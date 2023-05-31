@@ -1,0 +1,15 @@
+Testing numbers: 
+0 => tries 1
+1 => tries 5
+2 => tries 4
+3 => tries 3
+4 => tries 5
+5 => tries 2
+6 => tries 5
+7 => tries 4
+8 => tries 3
+9 => tries 5
+Total number of guesses: 37
+Test pool size: 10
+Average number of guesses: 3.7
+Time of execution: 47.0ms
