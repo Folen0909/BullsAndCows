@@ -31,7 +31,9 @@ public class Expand {
                     cows = numberOfCows(potGuess, finalGuess);
                     if (bulls == lengthOfWord) {
                         totalGuesses += numberOfTries;
-                        testFile.write(potGuess + " => tries " + numberOfTries + "\n");
+                        if (lengthOfWord < 5) {
+                            testFile.write(potGuess + " => tries " + numberOfTries + "\n");
+                        }
                         break;
                     }
                     removeNonPotentials(numbers, bulls, cows, finalGuess, lengthOfWord);
@@ -40,7 +42,9 @@ public class Expand {
                     bulls = numberOfBulls(potGuess, finalGuess);
                     if (bulls == lengthOfWord) {
                         totalGuesses += numberOfTries;
-                        testFile.write(potGuess + " => tries " + numberOfTries + "\n");
+                        if (lengthOfWord < 5) {
+                            testFile.write(potGuess + " => tries " + numberOfTries + "\n");
+                        }
                         break;
                     }
                     int clue = (Integer.parseInt(potGuess) <= Integer.parseInt(finalGuess)) ? 1 : -1;
