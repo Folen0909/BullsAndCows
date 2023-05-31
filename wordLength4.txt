@@ -5042,4 +5042,4 @@ Testing numbers:
 Total number of guesses: 34310
 Test pool size: 5040
 Average number of guesses: 6.807539682539683
-Time of execution: 25.609s
+Time of execution: 1801.0ms

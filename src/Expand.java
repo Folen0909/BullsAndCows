@@ -7,7 +7,7 @@ public class Expand {
 
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        int lengthOfWord = 4, bulls, cows, numberOfTries, totalGuesses = 0, sizeOfTestPool;
+        int lengthOfWord, bulls, cows, numberOfTries, totalGuesses = 0, sizeOfTestPool;
         System.out.println("Enter length of guessing word (limit 10): ");
         lengthOfWord = scanner.nextInt();
         long start = System.currentTimeMillis();
@@ -20,12 +20,12 @@ public class Expand {
         System.out.println("Wait for program to complete (length word > 4 may take some time)\n");
 
         for (String potGuess : testingNumbers) {
-            List<String> numbers = generateList(lengthOfWord);
-            guess = createSet(startingValue(lengthOfWord));
+            List<String> numbers = new ArrayList<>(testingNumbers);
+            guess = createCharacterSetFromString(startingValue(lengthOfWord));
             numberOfTries = 0;
             while(true) {
                 numberOfTries++;
-                Set<Character> finalGuess = guess;
+                String finalGuess = convertCharacterSetToString(guess);
                 if (numberOfTries % 2 == 1) {
                     bulls = numberOfBulls(potGuess, finalGuess);
                     cows = numberOfCows(potGuess, finalGuess);
@@ -35,7 +35,7 @@ public class Expand {
                         break;
                     }
                     removeNonPotentials(numbers, bulls, cows, finalGuess, lengthOfWord);
-                    guess = (numbers.size() == 1) ? createSet(numbers.get(0)) : createSet(numbers.get(numbers.size() / 2));
+                    guess = (numbers.size() == 1) ? createCharacterSetFromString(numbers.get(0)) : createCharacterSetFromString(numbers.get(numbers.size() / 2));
                 } else {
                     bulls = numberOfBulls(potGuess, finalGuess);
                     if (bulls == lengthOfWord) {
@@ -43,13 +43,13 @@ public class Expand {
                         testFile.write(potGuess + " => tries " + numberOfTries + "\n");
                         break;
                     }
-                    int clue = (Integer.parseInt(potGuess) <= Integer.parseInt(convertToString(finalGuess))) ? 1 : -1;
+                    int clue = (Integer.parseInt(potGuess) <= Integer.parseInt(finalGuess)) ? 1 : -1;
                     if (clue == 1) {
-                        numbers.removeIf(num -> (Integer.parseInt(num) >= Integer.parseInt(convertToString(finalGuess))));
+                        numbers.removeIf(num -> (Integer.parseInt(num) >= Integer.parseInt(finalGuess)));
                     } else {
-                        numbers.removeIf(num -> (Integer.parseInt(num) <= Integer.parseInt(convertToString(finalGuess))));
+                        numbers.removeIf(num -> (Integer.parseInt(num) <= Integer.parseInt(finalGuess)));
                     }
-                    guess = (numbers.size() == 1) ? createSet(numbers.get(0)) : createSet(numbers.get(numbers.size() / 2));
+                    guess = (numbers.size() == 1) ? createCharacterSetFromString(numbers.get(0)) : createCharacterSetFromString(numbers.get(numbers.size() / 2));
                 }
             }
         }
@@ -74,16 +74,15 @@ public class Expand {
         testFile.close();
     }
 
-    private static void removeNonPotentials(List<String> numbers, int bulls, int cows, Set<Character> finalGuess, int lengthOfWord) {
-        numbers.remove(convertToString(finalGuess));
-
+    private static void removeNonPotentials(List<String> numbers, int bulls, int cows, String finalGuess, int lengthOfWord) {
+        numbers.remove(finalGuess);
+        numbers.removeIf(num -> (numberOfBulls(num, finalGuess) != bulls));
+        int sumOfBullsAnsCows = bulls + cows;
         for (int numBulls = 0; numBulls <= lengthOfWord; numBulls++) {
-            int full = bulls + cows;
-            if (numBulls >= full) {
+            if (numBulls >= sumOfBullsAnsCows) {
                 for (int numCows = 0; numCows <= lengthOfWord - numBulls; numCows++) {
                     int total = numBulls + numCows;
-                    if (total == full) {
-                        numbers.removeIf(num -> (numberOfBulls(num, finalGuess) != bulls));
+                    if (total == sumOfBullsAnsCows) {
                         numbers.removeIf(num -> (numberOfContainedDigits(num, finalGuess) != total));
                         break;
                     }
@@ -124,7 +123,7 @@ public class Expand {
         return temp;
     }
 
-    private static Set<Character> createSet(String input) {
+    private static Set<Character> createCharacterSetFromString(String input) {
         Set<Character> set = new LinkedHashSet<>();
         for (char c : input.toCharArray()) {
             set.add(c);
@@ -132,18 +131,17 @@ public class Expand {
         return set;
     }
 
-    private static int numberOfContainedDigits(String number, Set<Character> digits) {
+    private static int numberOfContainedDigits(String number, String guess) {
         int count = 0;
-        for (Character digit : digits) {
-            if (number.contains(String.valueOf(digit))) {
+        for (int i = 0; i < guess.length(); i++) {
+            if (number.contains(String.valueOf(guess.charAt(i)))) {
                 count++;
             }
         }
         return count;
     }
 
-    private static int numberOfCows(String number, Set<Character> digits) {
-        String guess = convertToString(digits);
+    private static int numberOfCows(String number, String guess) {
         int count = 0;
         for (int i = 0; i < number.length(); i++) {
             if (number.contains(String.valueOf(guess.charAt(i))) && !(number.charAt(i) == guess.charAt(i))) {
@@ -153,8 +151,7 @@ public class Expand {
         return count;
     }
 
-    private static int numberOfBulls(String number, Set<Character> digits) {
-        String guess = convertToString(digits);
+    private static int numberOfBulls(String number, String guess) {
         int count = 0;
         for (int i = 0; i < number.length(); i++) {
             if (number.charAt(i) == guess.charAt(i)) {
@@ -163,7 +160,7 @@ public class Expand {
         }
         return count;
     }
-    private static String convertToString(Set<Character> set) {
+    private static String convertCharacterSetToString(Set<Character> set) {
         StringBuilder number = new StringBuilder();
         for (Character c : set) {
             number.append(c);

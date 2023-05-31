@@ -30242,4 +30242,4 @@ Testing numbers:
 Total number of guesses: 229700
 Test pool size: 30240
 Average number of guesses: 7.595899470899471
-Time of execution: 1611.997s
+Time of execution: 42.349s

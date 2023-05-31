@@ -12,4 +12,4 @@ Testing numbers:
 Total number of guesses: 37
 Test pool size: 10
 Average number of guesses: 3.7
-Time of execution: 47.0ms
+Time of execution: 22.0ms
